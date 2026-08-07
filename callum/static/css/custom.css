@@ -1,0 +1,335 @@
+/* =========================================================================
+   Callum — Freight Gateway Console
+   Design tokens: deep ink navy shell, paper-light workspace, mode colors
+   for air/sea/land, monospace for operational reference codes.
+   ========================================================================= */
+
+:root {
+  --clm-ink: #0f1b2d;
+  --clm-ink-soft: #16273e;
+  --clm-paper: #f5f7fa;
+  --clm-surface: #ffffff;
+  --clm-line: #e2e6ec;
+  --clm-text: #1a2333;
+  --clm-text-muted: #5b6b82;
+
+  --clm-air: #2f6fed;
+  --clm-air-bg: #eaf1fe;
+  --clm-sea: #0e9488;
+  --clm-sea-bg: #e6f6f4;
+  --clm-land: #b5691f;
+  --clm-land-bg: #faf0e4;
+
+  --clm-signal: #ff6b35;
+  --clm-success: #1d9a6c;
+  --clm-success-bg: #e7f7f0;
+  --clm-warning: #c9962b;
+  --clm-warning-bg: #fbf3e2;
+  --clm-danger: #d64545;
+  --clm-danger-bg: #fbe9e9;
+
+  --clm-radius: 10px;
+  --clm-font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --clm-font-body: "Inter", "Segoe UI", sans-serif;
+  --clm-font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+body {
+  font-family: var(--clm-font-body);
+  background-color: var(--clm-paper);
+  color: var(--clm-text);
+}
+
+h1, h2, h3, h4, .clm-display {
+  font-family: var(--clm-font-display);
+  letter-spacing: -0.01em;
+}
+
+.clm-mono {
+  font-family: var(--clm-font-mono);
+  letter-spacing: 0.01em;
+}
+
+/* ---------------------------------------------------------------------
+   Shell layout: ink sidebar + paper workspace
+   --------------------------------------------------------------------- */
+.clm-shell {
+  min-height: 100vh;
+}
+
+.clm-sidebar {
+  background: linear-gradient(180deg, var(--clm-ink) 0%, var(--clm-ink-soft) 100%);
+  min-height: 100vh;
+  width: 250px;
+  flex-shrink: 0;
+  color: #cfd8e6;
+}
+
+.clm-sidebar .clm-brand {
+  font-family: var(--clm-font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.clm-sidebar .clm-brand .clm-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--clm-signal);
+  color: #14100c;
+  font-weight: 800;
+  margin-right: 0.6rem;
+}
+
+.clm-nav-link {
+  color: #b7c3d6;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.925rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.clm-nav-link:hover,
+.clm-nav-link.active {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.clm-nav-section {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #6c7c92;
+  padding: 0 1rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.clm-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.clm-topbar {
+  background: var(--clm-surface);
+  border-bottom: 1px solid var(--clm-line);
+}
+
+/* ---------------------------------------------------------------------
+   Mode badges — the recurring visual language for air / sea / land
+   --------------------------------------------------------------------- */
+.clm-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--clm-font-display);
+}
+
+.clm-mode-badge.mode-air { background: var(--clm-air-bg); color: var(--clm-air); }
+.clm-mode-badge.mode-sea { background: var(--clm-sea-bg); color: var(--clm-sea); }
+.clm-mode-badge.mode-land { background: var(--clm-land-bg); color: var(--clm-land); }
+
+.clm-mode-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.clm-mode-dot.mode-air { background: var(--clm-air); }
+.clm-mode-dot.mode-sea { background: var(--clm-sea); }
+.clm-mode-dot.mode-land { background: var(--clm-land); }
+
+/* ---------------------------------------------------------------------
+   Status pills
+   --------------------------------------------------------------------- */
+.clm-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.clm-status.st-created,
+.clm-status.st-picked_up { background: #eef1f6; color: #4a5875; }
+.clm-status.st-in_transit,
+.clm-status.st-at_gateway,
+.clm-status.st-out_for_delivery { background: var(--clm-air-bg); color: var(--clm-air); }
+.clm-status.st-delivered { background: var(--clm-success-bg); color: var(--clm-success); }
+.clm-status.st-customs_hold { background: var(--clm-warning-bg); color: var(--clm-warning); }
+.clm-status.st-exception,
+.clm-status.st-cancelled { background: var(--clm-danger-bg); color: var(--clm-danger); }
+
+/* ---------------------------------------------------------------------
+   KPI cards
+   --------------------------------------------------------------------- */
+.clm-kpi {
+  background: var(--clm-surface);
+  border: 1px solid var(--clm-line);
+  border-radius: var(--clm-radius);
+  padding: 1.1rem 1.25rem;
+  height: 100%;
+}
+
+.clm-kpi .clm-kpi-value {
+  font-family: var(--clm-font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.clm-kpi .clm-kpi-label {
+  color: var(--clm-text-muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------------------------------------------------------------------
+   Signature element: the manifest stub — a card styled like a physical
+   cargo tag / waybill stub, with a perforated dashed edge and a
+   mode-colored spine. Used for the shipment reference header.
+   --------------------------------------------------------------------- */
+.clm-manifest {
+  background: var(--clm-surface);
+  border: 1px solid var(--clm-line);
+  border-radius: var(--clm-radius);
+  overflow: hidden;
+  display: flex;
+}
+
+.clm-manifest-spine {
+  width: 10px;
+  flex-shrink: 0;
+}
+.clm-manifest-spine.mode-air { background: var(--clm-air); }
+.clm-manifest-spine.mode-sea { background: var(--clm-sea); }
+.clm-manifest-spine.mode-land { background: var(--clm-land); }
+
+.clm-manifest-body {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  position: relative;
+}
+
+.clm-manifest-body::after {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  bottom: 0;
+  border-bottom: 1.5px dashed var(--clm-line);
+}
+
+.clm-manifest-ref {
+  font-family: var(--clm-font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---------------------------------------------------------------------
+   Timeline (shipment tracking events)
+   --------------------------------------------------------------------- */
+.clm-timeline {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.clm-timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--clm-line);
+}
+
+.clm-timeline-item {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.clm-timeline-item:last-child { padding-bottom: 0; }
+
+.clm-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -1.75rem;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--clm-surface);
+  border: 2px solid var(--clm-air);
+}
+
+.clm-timeline-item.is-latest::before {
+  background: var(--clm-air);
+}
+
+.clm-timeline-time {
+  font-family: var(--clm-font-mono);
+  font-size: 0.78rem;
+  color: var(--clm-text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   Table refinement
+   --------------------------------------------------------------------- */
+.clm-table thead th {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--clm-text-muted);
+  border-bottom: 1px solid var(--clm-line);
+  font-weight: 600;
+}
+
+.clm-table tbody tr {
+  border-bottom: 1px solid var(--clm-line);
+}
+
+.clm-table td {
+  vertical-align: middle;
+}
+
+.clm-ref-link {
+  font-family: var(--clm-font-mono);
+  font-weight: 600;
+  color: var(--clm-ink);
+  text-decoration: none;
+}
+.clm-ref-link:hover {
+  color: var(--clm-signal);
+}
+
+/* Buttons using the signal accent */
+.btn-clm-primary {
+  background-color: var(--clm-ink);
+  border-color: var(--clm-ink);
+  color: #fff;
+}
+.btn-clm-primary:hover {
+  background-color: var(--clm-signal);
+  border-color: var(--clm-signal);
+  color: #14100c;
+}
+
+@media (max-width: 991.98px) {
+  .clm-sidebar { position: fixed; z-index: 1040; transform: translateX(-100%); transition: transform 0.2s ease; }
+  .clm-sidebar.show { transform: translateX(0); }
+}

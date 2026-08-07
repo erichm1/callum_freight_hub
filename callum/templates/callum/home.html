@@ -1,0 +1,104 @@
+{% extends "callum/base.html" %}
+
+{% block title %}Overview — Callum{% endblock %}
+
+{% block topbar %}
+  <h1 class="h5 mb-0 clm-display">Network overview</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="clm-kpi">
+      <div class="clm-kpi-label">Total shipments</div>
+      <div class="clm-kpi-value">{{ total_shipments }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="clm-kpi">
+      <div class="clm-kpi-label">Active in network</div>
+      <div class="clm-kpi-value">{{ active_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="clm-kpi">
+      <div class="clm-kpi-label">Delivered</div>
+      <div class="clm-kpi-value" style="color: var(--clm-success);">{{ delivered_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="clm-kpi">
+      <div class="clm-kpi-label">Exceptions</div>
+      <div class="clm-kpi-value" style="color: var(--clm-danger);">{{ exception_count }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="clm-kpi d-flex align-items-center justify-content-between">
+      <div>
+        <span class="clm-mode-badge mode-air mb-2"><span class="clm-mode-dot mode-air"></span> Air</span>
+        <div class="clm-kpi-value mt-2">{{ mode_counts.AIR }}</div>
+      </div>
+      <i class="bi bi-airplane fs-1" style="color: var(--clm-air-bg);"></i>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="clm-kpi d-flex align-items-center justify-content-between">
+      <div>
+        <span class="clm-mode-badge mode-sea mb-2"><span class="clm-mode-dot mode-sea"></span> Sea</span>
+        <div class="clm-kpi-value mt-2">{{ mode_counts.SEA }}</div>
+      </div>
+      <i class="bi bi-water fs-1" style="color: var(--clm-sea-bg);"></i>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="clm-kpi d-flex align-items-center justify-content-between">
+      <div>
+        <span class="clm-mode-badge mode-land mb-2"><span class="clm-mode-dot mode-land"></span> Land</span>
+        <div class="clm-kpi-value mt-2">{{ mode_counts.LAND }}</div>
+      </div>
+      <i class="bi bi-truck fs-1" style="color: var(--clm-land-bg);"></i>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="h6 clm-display mb-0">Recent shipments</h2>
+  <a href="{% url 'dashboard:shipment_list' %}" class="small text-decoration-none">View all <i class="bi bi-arrow-right"></i></a>
+</div>
+
+<div class="table-responsive clm-manifest">
+  <div class="w-100 p-3">
+    <table class="table clm-table mb-0">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Mode</th>
+          <th>Route</th>
+          <th>Transporter</th>
+          <th>Status</th>
+          <th>ETA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for shipment in recent_shipments %}
+        <tr>
+          <td><a class="clm-ref-link" href="{% url 'dashboard:shipment_detail' shipment.reference %}">{{ shipment.reference }}</a></td>
+          <td><span class="clm-mode-badge mode-{{ shipment.mode|lower }}"><span class="clm-mode-dot mode-{{ shipment.mode|lower }}"></span>{{ shipment.get_mode_display }}</span></td>
+          <td class="small">{{ shipment.origin_gateway.code }} <i class="bi bi-arrow-right-short"></i> {{ shipment.destination_gateway.code }}</td>
+          <td class="small">{{ shipment.transporter.name }}</td>
+          <td><span class="clm-status st-{{ shipment.status|lower }}">{{ shipment.get_status_display }}</span></td>
+          <td class="small clm-mono">{{ shipment.eta|date:"Y-m-d H:i"|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No shipments yet. Create one from the API or admin to see it here.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

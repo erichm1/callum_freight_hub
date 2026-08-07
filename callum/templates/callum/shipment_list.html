@@ -1,0 +1,70 @@
+{% extends "callum/base.html" %}
+
+{% block title %}Shipments — Callum{% endblock %}
+
+{% block topbar %}
+  <h1 class="h5 mb-0 clm-display">Shipments</h1>
+{% endblock %}
+
+{% block content %}
+
+<form method="get" class="row g-2 mb-4">
+  <div class="col-auto">
+    <select name="mode" class="form-select form-select-sm">
+      <option value="">All modes</option>
+      {% for value, label in mode_choices %}
+        <option value="{{ value }}" {% if value == selected_mode %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <select name="status" class="form-select form-select-sm">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto flex-grow-1">
+    <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Search reference, shipper or consignee…">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-sm btn-clm-primary">Filter</button>
+    <a href="{% url 'dashboard:shipment_list' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+  </div>
+</form>
+
+<div class="table-responsive clm-manifest">
+  <div class="w-100 p-3">
+    <table class="table clm-table mb-0">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Mode</th>
+          <th>Route</th>
+          <th>Transporter</th>
+          <th>Status</th>
+          <th>ETD</th>
+          <th>ETA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for shipment in shipments %}
+        <tr>
+          <td><a class="clm-ref-link" href="{% url 'dashboard:shipment_detail' shipment.reference %}">{{ shipment.reference }}</a></td>
+          <td><span class="clm-mode-badge mode-{{ shipment.mode|lower }}"><span class="clm-mode-dot mode-{{ shipment.mode|lower }}"></span>{{ shipment.get_mode_display }}</span></td>
+          <td class="small">{{ shipment.origin_gateway.code }} <i class="bi bi-arrow-right-short"></i> {{ shipment.destination_gateway.code }}</td>
+          <td class="small">{{ shipment.transporter.name }}</td>
+          <td><span class="clm-status st-{{ shipment.status|lower }}">{{ shipment.get_status_display }}</span></td>
+          <td class="small clm-mono">{{ shipment.etd|date:"Y-m-d H:i"|default:"—" }}</td>
+          <td class="small clm-mono">{{ shipment.eta|date:"Y-m-d H:i"|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No shipments match these filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "callum/base.html" %}
+
+{% block title %}{{ shipment.reference }} — Callum{% endblock %}
+
+{% block topbar %}
+  <nav class="small">
+    <a href="{% url 'dashboard:shipment_list' %}" class="text-decoration-none text-muted">Shipments</a>
+    <span class="text-muted mx-1">/</span>
+    <span class="clm-mono">{{ shipment.reference }}</span>
+  </nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="clm-manifest mb-4">
+  <div class="clm-manifest-spine mode-{{ shipment.mode|lower }}"></div>
+  <div class="clm-manifest-body">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+      <div>
+        <div class="clm-manifest-ref">{{ shipment.reference }}</div>
+        <div class="d-flex align-items-center gap-2 mt-2">
+          <span class="clm-mode-badge mode-{{ shipment.mode|lower }}"><span class="clm-mode-dot mode-{{ shipment.mode|lower }}"></span>{{ shipment.get_mode_display }}</span>
+          <span class="clm-status st-{{ shipment.status|lower }}">{{ shipment.get_status_display }}</span>
+        </div>
+      </div>
+      <div class="text-end">
+        <div class="text-muted small">Route</div>
+        <div class="fw-semibold">{{ shipment.origin_gateway.code }} <i class="bi bi-arrow-right"></i> {{ shipment.destination_gateway.code }}</div>
+      </div>
+    </div>
+
+    <div class="row mt-4 gy-3">
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">Transporter</div>
+        <div>{{ shipment.transporter.name }}</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">Shipper</div>
+        <div>{{ shipment.shipper_name|default:"—" }}</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">Consignee</div>
+        <div>{{ shipment.consignee_name|default:"—" }}</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">Weight / Volume</div>
+        <div>{{ shipment.weight_kg|default:"—" }} kg / {{ shipment.volume_m3|default:"—" }} m³</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">ETD</div>
+        <div class="clm-mono">{{ shipment.etd|date:"Y-m-d H:i"|default:"—" }}</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="text-muted small">ETA</div>
+        <div class="clm-mono">{{ shipment.eta|date:"Y-m-d H:i"|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <h2 class="h6 clm-display mb-3">Tracking timeline</h2>
+    <div class="clm-kpi">
+      <div class="clm-timeline">
+        {% for event in timeline %}
+        <div class="clm-timeline-item {% if forloop.first %}is-latest{% endif %}">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="clm-status st-{{ event.status|lower }}">{{ event.get_status_display }}</span>
+            <span class="clm-timeline-time">{{ event.created_at|date:"Y-m-d H:i" }}</span>
+          </div>
+          <div class="small text-muted mt-1">
+            {% if event.location %}{{ event.location }} · {% endif %}{{ event.get_source_display }}
+          </div>
+          {% if event.description %}<div class="small mt-1">{{ event.description }}</div>{% endif %}
+        </div>
+        {% empty %}
+        <p class="text-muted small mb-0">No tracking events recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <h2 class="h6 clm-display mb-3">Mode metadata <span class="text-muted small fw-normal">({{ shipment.get_mode_display }})</span></h2>
+    <div class="clm-kpi">
+      {% if shipment.metadata %}
+        <table class="table table-sm mb-0">
+          <tbody>
+            {% for key, value in shipment.metadata.items %}
+            <tr>
+              <td class="text-muted small text-nowrap">{{ key }}</td>
+              <td class="clm-mono small">{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted small mb-0">No mode-specific metadata submitted for this shipment.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

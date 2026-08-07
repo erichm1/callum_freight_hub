@@ -1,0 +1,83 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Callum — Freight Gateway{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<div class="d-flex clm-shell">
+
+  <!-- Sidebar -->
+  <aside class="clm-sidebar d-flex flex-column p-3" id="clmSidebar">
+    <a href="{% url 'dashboard:home' %}" class="d-flex align-items-center text-decoration-none mb-4 clm-brand">
+      <span class="clm-brand-mark">C</span> Callum
+    </a>
+
+    <div class="clm-nav-section">Operations</div>
+    <a href="{% url 'dashboard:home' %}" class="clm-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      <i class="bi bi-grid-1x2"></i> Overview
+    </a>
+    <a href="{% url 'dashboard:shipment_list' %}" class="clm-nav-link {% if request.resolver_match.url_name == 'shipment_list' or request.resolver_match.url_name == 'shipment_detail' %}active{% endif %}">
+      <i class="bi bi-box-seam"></i> Shipments
+    </a>
+    <a href="/admin/gateways/gateway/" class="clm-nav-link">
+      <i class="bi bi-diagram-3"></i> Gateways
+    </a>
+    <a href="/admin/transporters/transporter/" class="clm-nav-link">
+      <i class="bi bi-truck"></i> Transporters
+    </a>
+
+    <div class="clm-nav-section">Integration</div>
+    <a href="/api/docs/" class="clm-nav-link" target="_blank" rel="noopener">
+      <i class="bi bi-plug"></i> API docs
+    </a>
+    <a href="/admin/core/partner/" class="clm-nav-link">
+      <i class="bi bi-key"></i> Partner API keys
+    </a>
+
+    <div class="mt-auto pt-3 border-top border-secondary-subtle">
+      {% if request.user.is_authenticated %}
+        <div class="d-flex align-items-center justify-content-between">
+          <span class="small text-white-50">{{ request.user.username }}</span>
+          <a href="{% url 'dashboard:logout' %}" class="small text-white-50">Sign out</a>
+        </div>
+      {% endif %}
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="clm-main d-flex flex-column">
+    <header class="clm-topbar d-flex align-items-center justify-content-between px-4 py-3">
+      <button class="btn btn-sm btn-outline-secondary d-lg-none" type="button" onclick="document.getElementById('clmSidebar').classList.toggle('show')">
+        <i class="bi bi-list"></i>
+      </button>
+      <div>{% block topbar %}{% endblock %}</div>
+      <div class="text-muted small">Hub code: <span class="clm-mono">{{ CALLUM_GATEWAY_CODE }}</span></div>
+    </header>
+
+    <main class="p-4 flex-grow-1">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
